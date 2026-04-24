@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.exc import IntegrityError
@@ -16,6 +18,17 @@ from app.models.file import AuditLog
 from app.models.user import User
 
 router = APIRouter()
+
+ADMIN_BOOTSTRAP_USERNAME = os.getenv("ADMIN_BOOTSTRAP_USERNAME", "").strip()
+ADMIN_BOOTSTRAP_EMAIL = os.getenv("ADMIN_BOOTSTRAP_EMAIL", "").strip().lower()
+
+
+def resolve_role_for_new_user(username: str, email: str) -> str:
+    if ADMIN_BOOTSTRAP_USERNAME and username == ADMIN_BOOTSTRAP_USERNAME:
+        return "admin"
+    if ADMIN_BOOTSTRAP_EMAIL and email == ADMIN_BOOTSTRAP_EMAIL:
+        return "admin"
+    return "viewer"
 
 
 class RegisterRequest(BaseModel):
@@ -50,6 +63,7 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
         username=username,
         email=email,
         hashed_password=hash_password(body.password),
+        role=resolve_role_for_new_user(username, email),
     )
     db.add(user)
     try:

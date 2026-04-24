@@ -14,7 +14,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum("admin", "owner", "viewer", name="user_role"), default="owner")
+    role = Column(Enum("admin", "owner", "viewer", name="user_role"), default="viewer")
     created_at = Column(DateTime, default=datetime.utcnow)
 
     files = relationship("FileRecord", back_populates="owner")
