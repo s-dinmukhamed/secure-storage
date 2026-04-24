@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import require_role
-from app.models.user import User
 from app.models.file import AuditLog
+from app.models.user import User
 
 router = APIRouter()
 
@@ -18,15 +18,15 @@ def get_audit_logs(
     logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(limit).all()
     return [
         {
-            "id": l.id,
-            "user_id": l.user_id,
-            "action": l.action,
-            "resource_id": l.resource_id,
-            "ip_address": l.ip_address,
-            "detail": l.detail,
-            "timestamp": l.timestamp,
+            "id": log.id,
+            "user_id": log.user_id,
+            "action": log.action,
+            "resource_id": log.resource_id,
+            "ip_address": log.ip_address,
+            "detail": log.detail,
+            "timestamp": log.timestamp,
         }
-        for l in logs
+        for log in logs
     ]
 
 

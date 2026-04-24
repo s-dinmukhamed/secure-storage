@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
 import base64
+import os
+
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # In production: load from KMS or secrets manager

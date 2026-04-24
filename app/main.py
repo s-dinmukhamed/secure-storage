@@ -1,12 +1,12 @@
-from pathlib import Path
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from app.routers import auth, files, admin
-from app.core.database import Base, engine
-from app.core.database import DATABASE_URL
+
+from app.core.database import DATABASE_URL, Base, engine
+from app.routers import admin, auth, files
 
 Base.metadata.create_all(bind=engine)
 

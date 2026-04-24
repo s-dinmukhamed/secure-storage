@@ -1,16 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import (
-    hash_password, verify_password,
-    create_access_token, create_refresh_token,
-    decode_token, get_current_user
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    get_current_user,
+    hash_password,
+    verify_password,
 )
-from app.models.user import User
 from app.models.file import AuditLog
+from app.models.user import User
 
 router = APIRouter()
 

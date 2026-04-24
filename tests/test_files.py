@@ -1,11 +1,14 @@
 import io
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app
 from app.core.database import Base, get_db
+from app.main import app
+from app.services.crypto import decrypt_file, encrypt_file
+from app.services.signed_url import generate_signed_url, verify_signed_url
 
 TEST_DATABASE_URL = "sqlite:///./test_files.db"
 engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
@@ -115,14 +118,12 @@ class TestFiles:
 
 class TestCrypto:
     def test_encrypt_decrypt_roundtrip(self):
-        from app.services.crypto import encrypt_file, decrypt_file
         original = b"sensitive payload 12345"
         ciphertext, nonce = encrypt_file(original)
         assert ciphertext != original
         assert decrypt_file(ciphertext, nonce) == original
 
     def test_different_nonces_per_file(self):
-        from app.services.crypto import encrypt_file
         _, nonce1 = encrypt_file(b"data")
         _, nonce2 = encrypt_file(b"data")
         assert nonce1 != nonce2  # nonces must never repeat
@@ -130,12 +131,10 @@ class TestCrypto:
 
 class TestSignedUrl:
     def test_valid_token(self):
-        from app.services.signed_url import generate_signed_url, verify_signed_url
         url = generate_signed_url("file-123", "user-456")
         token = url.split("/files/download/")[1]
         result = verify_signed_url(token)
         assert result == ("file-123", "user-456")
 
     def test_tampered_token(self):
-        from app.services.signed_url import verify_signed_url
         assert verify_signed_url("totallyfaketoken") is None
