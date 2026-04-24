@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.ruff_cache
+tests/.pytest_cache
+frontend/node_modules
+frontend/dist
+coverage.xml
+test.db
+test_files.db

@@ -1,7 +1,9 @@
 import logging
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -13,6 +15,23 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Secure File Vault", version="1.0.0")
 frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 logger = logging.getLogger("secure_vault")
+
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
+    if origin.strip()
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if (frontend_dist / "assets").exists():
     app.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="assets")
